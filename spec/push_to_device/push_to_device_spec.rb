@@ -33,6 +33,19 @@ describe PushToDevice do
     end
   end
 
+  describe ".post_notification_to_users" do
+
+    it "should make a request to the proper endpoint" do
+      unique_hashes = ["1234123412", "asdfasfdfa"]
+      notification_data = {
+        ios_specific_fields: {text: "ios"},
+        android_specific_fields: {text: "android"}
+      }
+      PushToDevice::API.post_notification_to_users(unique_hashes: unique_hashes, notification_data: notification_data)
+      a_request(:post, "http://nowhere.com/users/notifications").with(body: {unique_hashes: unique_hashes, notification_data: notification_data}.to_json).should have_been_made
+    end
+  end
+
   describe ".register_user_for_push" do
 
     it "should make a request to the proper endpoint with the proper body" do

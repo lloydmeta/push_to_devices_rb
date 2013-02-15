@@ -159,6 +159,22 @@ module PushToDevice
       self.post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
     end
 
+    # POSTS to users/notifications
+    # to create a notification for a group of users
+    # Expects the following
+    # {
+    #   unique_hashes: an array of unique hashes
+    #   notification_data: a hash with the following
+    #     {
+    #       ios_specific_fields: a hash of what you want to send to your ios users,
+    #       android_specific_fields: a hash of whaty ou want to send to your android users
+    #                                            separated into {data: {}, options: {}}
+    #     }
+    # }
+    def self.post_notification_to_users(params = {})
+      self.post("users/notifications", params)
+    end
+
     # POSTS to users/ to register a user for push notifications
     # Expects the following
     # {
