@@ -1,6 +1,6 @@
-require 'open-uri'
 require "net/http"
 require "net/https"
+require "active_support/core_ext/module/attribute_accessors"
 require "cgi"
 
 module PushToDevice
@@ -140,21 +140,34 @@ module PushToDevice
     # GETS to service/me
     # Returns the body
     def self.get_service_info(params = {})
-      self.get('service/me')
+      self.get('services/me')
     end
 
     # POSTS to users/:unique_hash/notifications
-    # but for refreshing purposes
+    # to create a notification for a user
     # Expects the following
     # {
     #   unique_hash: a unique hash of the user in your service,
-    #   ios_specific_fields: a hash of what you want to send to your ios users,
-    #   android_specific_fields: a hash of whaty ou want to send to your android users
+    #   notification_data: a hash with the following
+    #     {
+    #       ios_specific_fields: a hash of what you want to send to your ios users,
+    #       android_specific_fields: a hash of whaty ou want to send to your android users
     #                                            separated into {data: {}, options: {}}
+    #     }
     # }
     def self.post_notification_to_user(params = {})
-      self.post("users/#{params.delete(:unique_hash)/notifications}", params)
-      )
+      self.post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
+    end
+
+    # POSTS to users/ to register a user for push notifications
+    # Expects the following
+    # {
+    #   unique_hash: a unique hash of the user in your service,
+    #   apn_device_token: an apple ios device token,
+    #   gcm_registration_id: gcm_registration_id
+    #  }
+    def self.register_user_for_push(params = {})
+      self.post("users/", params)
     end
 
   end

@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
     gem.name        = %q{push_to_device}
-    gem.version = "0.0.1"
+    gem.version = "0.0.3"
     gem.date = %q{2013-02-15}
     gem.authors     = ["Lloyd Meta"]
     gem.email       = ["lloydmeta@gmail.com"]
@@ -12,4 +12,13 @@ Gem::Specification.new do |gem|
     gem.files         = `git ls-files`.split("\n")
     gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
     gem.require_paths = ["lib"]
+
+    gem.add_dependency 'json'
+
+    gem.add_development_dependency 'rake'
+    gem.add_development_dependency 'rspec'
+    gem.add_development_dependency 'webmock'
+    gem.add_development_dependency 'active_support'
+    gem.add_development_dependency 'i18n'
+
 end
