@@ -3,7 +3,7 @@ require "net/https"
 require "active_support/core_ext/module/attribute_accessors"
 require "cgi"
 
-module PushToDevice
+module PushToDevices
 
   module Config
     VERSION = '0.01'
