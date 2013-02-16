@@ -29,7 +29,7 @@ module PushToDevices
     @@client_secret = ""
 
     mattr_accessor :user_agent
-    @@user_agent = "PushToDevice RB #{PushToDevice::Config::VERSION}"
+    @@user_agent = "PushToDevices RB #{PushToDevices::Config::VERSION}"
 
     mattr_accessor :use_ssl
     @@use_ssl = true
@@ -41,7 +41,7 @@ module PushToDevices
     @@api_host = ""
 
     mattr_accessor :client_info
-    @@client_info = {version: PushToDevice::Config::VERSION}
+    @@client_info = {version: PushToDevices::Config::VERSION}
 
     def self.configure
       yield self if block_given?
@@ -131,7 +131,7 @@ module PushToDevices
 
     def self.handle_response(response)
       if response.code.to_i != 200
-        raise PushToDevice::Exception.new(response.code, response.body)
+        raise PushToDevices::Exception.new(response.code, response.body)
       else
         response.body
       end

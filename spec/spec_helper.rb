@@ -1,6 +1,6 @@
 require 'bundler/setup'
 require 'rspec'
-require 'push_to_device'
+require 'push_to_devices'
 require 'webmock/rspec'
 require 'active_support/core_ext'
 

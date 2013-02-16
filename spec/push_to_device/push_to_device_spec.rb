@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe PushToDevice do
+describe PushToDevices do
 
   before(:all) do
-    PushToDevice::API.configure do |config|
+    PushToDevices::API.configure do |config|
       config.api_host = "nowhere.com"
       config.client_id = "fakeclientid"
       config.client_secret = "fakeclientsecret"
@@ -14,7 +14,7 @@ describe PushToDevice do
   describe ".get_service_info" do
 
     it "should make a request to the proper endpoint" do
-      PushToDevice::API.get_service_info
+      PushToDevices::API.get_service_info
       a_request(:get, "http://nowhere.com/services/me").should have_been_made
     end
 
@@ -28,7 +28,7 @@ describe PushToDevice do
         ios_specific_fields: {text: "ios"},
         android_specific_fields: {text: "android"}
       }
-      PushToDevice::API.post_notification_to_user(unique_hash: unique_hash, notification_data: notification_data)
+      PushToDevices::API.post_notification_to_user(unique_hash: unique_hash, notification_data: notification_data)
       a_request(:post, "http://nowhere.com/users/#{unique_hash}/notifications").with(body: notification_data.to_json).should have_been_made
     end
   end
@@ -41,7 +41,7 @@ describe PushToDevice do
         ios_specific_fields: {text: "ios"},
         android_specific_fields: {text: "android"}
       }
-      PushToDevice::API.post_notification_to_users(unique_hashes: unique_hashes, notification_data: notification_data)
+      PushToDevices::API.post_notification_to_users(unique_hashes: unique_hashes, notification_data: notification_data)
       a_request(:post, "http://nowhere.com/users/notifications").with(body: {unique_hashes: unique_hashes, notification_data: notification_data}.to_json).should have_been_made
     end
   end
@@ -54,7 +54,7 @@ describe PushToDevice do
         apn_device_token: "an apple ios device token",
         gcm_registration_id: "gcm_registration_id"
        }
-       PushToDevice::API.register_user_for_push(data)
+       PushToDevices::API.register_user_for_push(data)
       a_request(:post, "http://nowhere.com/users/").with(body: data.to_json).should have_been_made
     end
   end
