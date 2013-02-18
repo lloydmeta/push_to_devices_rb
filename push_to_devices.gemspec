@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
     gem.name        = %q{push_to_devices}
-    gem.version = "0.0.8"
+    gem.version = "0.0.9"
     gem.date = %q{2013-02-15}
     gem.authors     = ["Lloyd Meta"]
     gem.email       = ["lloydmeta@gmail.com"]
