@@ -60,14 +60,7 @@ module PushToDevices
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
-      if params.empty?
-        uri="/"+endpoint
-      else
-        query_string = params.map {|k, v|
-          "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
-        }.join("&")
-        uri = "/"+endpoint+"?"+query_string
-      end
+      uri = self.generate_uri_from_params(endpoint, params)
 
       # Set up the request
       request = Net::HTTP::Get.new(uri)
@@ -123,6 +116,17 @@ module PushToDevices
         client_sig: self.generate_client_sig(timestamp_s),
         timestamp: timestamp_s
       }
+    end
+
+    def self.generate_uri_from_params(endpoint, params)
+      if params.empty?
+        "/"+endpoint
+      else
+        query_string = params.map {|k, v|
+          "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
+        }.join("&")
+        "/"+endpoint+"?"+query_string
+      end
     end
 
     def self.generate_client_sig(timestamp_s)
