@@ -34,7 +34,6 @@ The example below assumes a typical Rails-like setup (with a YAML file to hold y
 
 ```Ruby
 # Load the push_server.yml configuration file
-rails_env = `hostname`.chomp == 'petalog_dev' ? "development_petalog" : Rails.env
 push_server_config = YAML.load_file(Rails.root + 'config/push_server.yml')[rails_env].symbolize_keys
 
 PushToDevices::API.configure do |config|
