@@ -59,7 +59,7 @@ Examples
       apn_device_token: "an apple ios device token",
       gcm_registration_id: "gcm_registration_id"
      }
-     PushToDevices::API.register_user_for_push(data)
+    PushToDevices::API.register_user_for_push(data)
     ```
 
 3. Send a notification to a user (Push to Devices server takes care of sending to all the user's devices)
