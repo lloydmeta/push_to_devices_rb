@@ -4,6 +4,8 @@ Push to Devices Ruby Client Library
 [![Build
 Status](https://secure.travis-ci.org/lloydmeta/push_to_devices_rb.png)](http://travis-ci.org/lloydmeta/push_to_devices_rb)
 
+[![Code Climate](https://codeclimate.com/github/lloydmeta/push_to_devices_rb.png)](https://codeclimate.com/github/lloydmeta/push_to_devices_rb)
+
 A Ruby client library for [Push to Devices server](https://github.com/lloydmeta/push_to_devices) to make it easier to register users, send notifications to users individually, and send a notification to a bunch of users.
 
 Installation
