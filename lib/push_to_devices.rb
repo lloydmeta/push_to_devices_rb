@@ -5,7 +5,7 @@ require "cgi"
 module PushToDevices
 
   module Config
-    VERSION = '0.1.0'
+    VERSION = '0.1.1'
   end
 
   class Exception < ::StandardError
@@ -42,7 +42,7 @@ module PushToDevices
 
         # Set up the HTTP connection
         http = Net::HTTP.new(
-            api_host,
+            host,
             api_port
         )
         http.use_ssl = (use_ssl == true)
@@ -74,7 +74,7 @@ module PushToDevices
 
         # Set up the HTTP connection
         http = Net::HTTP.new(
-            api_host,
+            host,
             api_port
         )
         http.use_ssl = (use_ssl == true)

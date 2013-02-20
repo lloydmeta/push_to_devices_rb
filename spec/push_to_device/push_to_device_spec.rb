@@ -4,7 +4,7 @@ describe PushToDevices do
 
   before(:all) do
     PushToDevices::API.configure do |config|
-      config.api_host = "nowhere.com"
+      config.host = "nowhere.com"
       config.client_id = "fakeclientid"
       config.client_secret = "fakeclientsecret"
       config.use_ssl = false
