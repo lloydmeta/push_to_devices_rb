@@ -42,7 +42,7 @@ The example below assumes a typical Rails-like setup (with a YAML file to hold y
 push_server_config = YAML.load_file(Rails.root + 'config/push_server.yml')[rails_env].symbolize_keys
 
 PushToDevices::API.configure do |config|
-  config.api_host = push_server_config[:api_host]
+  config.host = push_server_config[:host]
   config.client_id = push_server_config[:client_id]
   config.client_secret = push_server_config[:client_secret]
   config.use_ssl = push_server_config[:use_ssl]
