@@ -11,10 +11,9 @@ module PushToDevices
   class Exception < ::StandardError
     attr_accessor :response_code, :response_body
 
-    # Pretty self explanatory stuff here...
     def initialize(response_code, response_body)
-      @response_code = response_code
-      @response_body = response_body
+      self.response_code = response_code
+      self.response_body = response_body
       super "Response was #{response_code}, #{response_body}"
     end
   end
@@ -43,7 +42,7 @@ module PushToDevices
         # Set up the HTTP connection
         http = generate_http
 
-        uri = self.generate_uri_from_params(endpoint, params)
+        uri = generate_uri_from_params(endpoint, params)
 
         # Set up the request
         request = Net::HTTP::Get.new(uri)
@@ -59,7 +58,7 @@ module PushToDevices
           http.request request
         }
 
-        self.handle_response(response)
+        handle_response(response)
       end
 
       def post(endpoint, params = {})
@@ -81,7 +80,7 @@ module PushToDevices
           http.request request
         }
 
-        self.handle_response(response)
+        handle_response(response)
       end
 
       def generate_http
@@ -140,7 +139,7 @@ module PushToDevices
       # GETS to service/me
       # Returns the body
       def get_service_info(params = {})
-        self.get('services/me')
+        get('services/me')
       end
 
       # POSTS to users/:unique_hash/notifications
@@ -156,7 +155,7 @@ module PushToDevices
       #     }
       # }
       def post_notification_to_user(params = {})
-        self.post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
+        post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
       end
 
       # POSTS to users/notifications
@@ -172,7 +171,7 @@ module PushToDevices
       #     }
       # }
       def post_notification_to_users(params = {})
-        self.post("users/notifications", params)
+        post("users/notifications", params)
       end
 
       # POSTS to users/ to register a user for push notifications
@@ -183,7 +182,7 @@ module PushToDevices
       #   gcm_registration_id: gcm_registration_id
       #  }
       def register_user_for_push(params = {})
-        self.post("users/", params)
+        post("users/", params)
       end
     end
 
