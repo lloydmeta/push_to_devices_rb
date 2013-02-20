@@ -5,7 +5,7 @@ require "cgi"
 module PushToDevices
 
   module Config
-    VERSION = '0.1.2'
+    VERSION = '0.1.3'
   end
 
   class Exception < ::StandardError
@@ -26,14 +26,14 @@ module PushToDevices
 
       def configure
         # defaults
-        client_id = ""
-        client_secret = ""
-        user_agent = "PushToDevices RB #{PushToDevices::Config::VERSION}"
-        use_ssl = true
-        debug = true
-        host = ""
-        port = 80
-        client_info = {version: PushToDevices::Config::VERSION}
+        self.client_id = ""
+        self.client_secret = ""
+        self.user_agent = "PushToDevices RB #{PushToDevices::Config::VERSION}"
+        self.use_ssl = true
+        self.debug = true
+        self.host = ""
+        self.port = 80
+        self.client_info = {version: PushToDevices::Config::VERSION}
 
         yield self
       end
