@@ -2,7 +2,7 @@ require 'bundler/setup'
 require 'rspec'
 require 'push_to_devices'
 require 'webmock/rspec'
-require 'active_support/core_ext'
+require 'json'
 
 Dir[File.expand_path('../support/**/*', __FILE__)].each { |f| require f }
 

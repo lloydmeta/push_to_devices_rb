@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
     gem.name        = %q{push_to_devices}
-    gem.version = "0.0.9"
+    gem.version = "0.1.0"
     gem.date = %q{2013-02-15}
     gem.authors     = ["Lloyd Meta"]
     gem.email       = ["lloydmeta@gmail.com"]
@@ -18,7 +18,4 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency 'rake'
     gem.add_development_dependency 'rspec'
     gem.add_development_dependency 'webmock'
-    gem.add_development_dependency 'active_support'
-    gem.add_development_dependency 'i18n'
-
 end

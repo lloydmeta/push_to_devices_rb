@@ -1,12 +1,11 @@
 require "net/http"
 require "net/https"
-require "active_support/core_ext/module/attribute_accessors"
 require "cgi"
 
 module PushToDevices
 
   module Config
-    VERSION = '0.01'
+    VERSION = '0.1.0'
   end
 
   class Exception < ::StandardError
@@ -22,172 +21,173 @@ module PushToDevices
 
   module API
 
-    mattr_accessor :client_id
-    @@client_id = ""
+    class << self
+      attr_accessor :client_id, :client_secret, :user_agent, :use_ssl, :debug, :host, :port, :client_info
 
-    mattr_accessor :client_secret
-    @@client_secret = ""
+      def configure
+        # defaults
+        client_id = ""
+        client_secret = ""
+        user_agent = "PushToDevices RB #{PushToDevices::Config::VERSION}"
+        use_ssl = true
+        debug = true
+        host = ""
+        port = 80
+        client_info = {version: PushToDevices::Config::VERSION}
 
-    mattr_accessor :user_agent
-    @@user_agent = "PushToDevices RB #{PushToDevices::Config::VERSION}"
-
-    mattr_accessor :use_ssl
-    @@use_ssl = true
-
-    mattr_accessor :debug
-    @@debug = true
-
-    mattr_accessor :api_host
-    @@api_host = ""
-
-    mattr_accessor :client_info
-    @@client_info = {version: PushToDevices::Config::VERSION}
-
-    def self.configure
-      yield self if block_given?
-    end
-
-    def self.get(endpoint, params={})
-
-      # Set up the HTTP connection
-      http = Net::HTTP.new(
-          @@api_host,
-          @@use_ssl == true ? 443 : 80
-      )
-      http.use_ssl = (@@use_ssl == true)
-      if @@debug == true
-        http.set_debug_output($stdout)
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        yield self
       end
 
-      uri = self.generate_uri_from_params(endpoint, params)
+      def get(endpoint, params={})
 
-      # Set up the request
-      request = Net::HTTP::Get.new(uri)
+        # Set up the HTTP connection
+        http = Net::HTTP.new(
+            api_host,
+            api_port
+        )
+        http.use_ssl = (use_ssl == true)
+        if debug == true
+          http.set_debug_output($stdout)
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
 
-      # Set credentials
-      client_credentials = generate_client_credentials
-      request["server-client-id"] = client_credentials[:client_id]
-      request["client-sig"] = client_credentials[:client_sig]
-      request["timestamp"] = client_credentials[:timestamp]
+        uri = self.generate_uri_from_params(endpoint, params)
 
-      # Fire the package !
-      response = http.start {|http|
-        http.request request
-      }
+        # Set up the request
+        request = Net::HTTP::Get.new(uri)
 
-      self.handle_response(response)
-    end
+        # Set credentials
+        client_credentials = generate_client_credentials
+        request["server-client-id"] = client_credentials[:client_id]
+        request["client-sig"] = client_credentials[:client_sig]
+        request["timestamp"] = client_credentials[:timestamp]
 
-    def self.post(endpoint, params = {})
+        # Fire the package !
+        response = http.start {|http|
+          http.request request
+        }
 
-      # Set up the HTTP connection
-      http = Net::HTTP.new(
-          @@api_host,
-          @@use_ssl == true ? 443 : 80
-      )
-      http.use_ssl = (@@use_ssl == true)
-      if @@debug == true
-        http.set_debug_output($stdout)
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        self.handle_response(response)
       end
 
-      request = Net::HTTP::Post.new("/"+endpoint, initheader = {'Content-Type' =>'application/json'})
-      request.body = params.to_json
+      def post(endpoint, params = {})
 
-      # Set credentials
-      client_credentials = generate_client_credentials
-      request["server-client-id"] = client_credentials[:client_id]
-      request["client-sig"] = client_credentials[:client_sig]
-      request["timestamp"] = client_credentials[:timestamp]
+        # Set up the HTTP connection
+        http = Net::HTTP.new(
+            api_host,
+            api_port
+        )
+        http.use_ssl = (use_ssl == true)
+        if debug == true
+          http.set_debug_output($stdout)
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
 
-      # Fire the package !
-      response = http.start {|http|
-        http.request request
-      }
+        request = Net::HTTP::Post.new("/"+endpoint, initheader = {'Content-Type' =>'application/json'})
+        request.body = params.to_json
 
-      self.handle_response(response)
-    end
+        # Set credentials
+        client_credentials = generate_client_credentials
+        request["server-client-id"] = client_credentials[:client_id]
+        request["client-sig"] = client_credentials[:client_sig]
+        request["timestamp"] = client_credentials[:timestamp]
 
-    def self.generate_uri_from_params(endpoint, params)
-      if params.empty?
-        "/#{endpoint}"
-      else
-        query_string = params.map {|k, v|
-          "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
-        }.join("&")
-        "/#{endpoint}?#{query_string}"
+        # Fire the package !
+        response = http.start {|http|
+          http.request request
+        }
+
+        self.handle_response(response)
       end
-    end
 
-    def self.generate_client_credentials
-      timestamp_s = Time.now.to_i.to_s
-      {
-        client_id: @@client_id,
-        client_sig: self.generate_client_sig(timestamp_s),
-        timestamp: timestamp_s
-      }
-    end
-
-    def self.generate_client_sig(timestamp_s)
-      OpenSSL::HMAC.hexdigest 'sha1', @@client_secret, timestamp_s
-    end
-
-    def self.handle_response(response)
-      if response.code.to_i != 200
-        raise PushToDevices::Exception.new(response.code, response.body)
-      else
-        response.body
+      def api_port
+        if port
+          port
+        else
+          use_ssl ? 443 : 80
+        end
       end
-    end
 
-    # GETS to service/me
-    # Returns the body
-    def self.get_service_info(params = {})
-      self.get('services/me')
-    end
+      def generate_uri_from_params(endpoint, params)
+        if params.empty?
+          "/#{endpoint}"
+        else
+          query_string = params.map {|k, v|
+            "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
+          }.join("&")
+          "/#{endpoint}?#{query_string}"
+        end
+      end
 
-    # POSTS to users/:unique_hash/notifications
-    # to create a notification for a user
-    # Expects the following
-    # {
-    #   unique_hash: a unique hash of the user in your service,
-    #   notification_data: a hash with the following
-    #     {
-    #       ios_specific_fields: a hash of what you want to send to your ios users,
-    #       android_specific_fields: a hash of whaty ou want to send to your android users
-    #                                            separated into {data: {}, options: {}}
-    #     }
-    # }
-    def self.post_notification_to_user(params = {})
-      self.post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
-    end
+      def generate_client_credentials
+        timestamp_s = Time.now.to_i.to_s
+        {
+          client_id: client_id,
+          client_sig: self.generate_client_sig(timestamp_s),
+          timestamp: timestamp_s
+        }
+      end
 
-    # POSTS to users/notifications
-    # to create a notification for a group of users
-    # Expects the following
-    # {
-    #   unique_hashes: an array of unique hashes
-    #   notification_data: a hash with the following
-    #     {
-    #       ios_specific_fields: a hash of what you want to send to your ios users,
-    #       android_specific_fields: a hash of whaty ou want to send to your android users
-    #                                            separated into {data: {}, options: {}}
-    #     }
-    # }
-    def self.post_notification_to_users(params = {})
-      self.post("users/notifications", params)
-    end
+      def generate_client_sig(timestamp_s)
+        OpenSSL::HMAC.hexdigest 'sha1', client_secret, timestamp_s
+      end
 
-    # POSTS to users/ to register a user for push notifications
-    # Expects the following
-    # {
-    #   unique_hash: a unique hash of the user in your service,
-    #   apn_device_token: an apple ios device token,
-    #   gcm_registration_id: gcm_registration_id
-    #  }
-    def self.register_user_for_push(params = {})
-      self.post("users/", params)
+      def handle_response(response)
+        if response.code.to_i != 200
+          raise PushToDevices::Exception.new(response.code, response.body)
+        else
+          response.body
+        end
+      end
+
+      # GETS to service/me
+      # Returns the body
+      def get_service_info(params = {})
+        self.get('services/me')
+      end
+
+      # POSTS to users/:unique_hash/notifications
+      # to create a notification for a user
+      # Expects the following
+      # {
+      #   unique_hash: a unique hash of the user in your service,
+      #   notification_data: a hash with the following
+      #     {
+      #       ios_specific_fields: a hash of what you want to send to your ios users,
+      #       android_specific_fields: a hash of whaty ou want to send to your android users
+      #                                            separated into {data: {}, options: {}}
+      #     }
+      # }
+      def post_notification_to_user(params = {})
+        self.post("users/#{params.delete(:unique_hash)}/notifications", params.delete(:notification_data))
+      end
+
+      # POSTS to users/notifications
+      # to create a notification for a group of users
+      # Expects the following
+      # {
+      #   unique_hashes: an array of unique hashes
+      #   notification_data: a hash with the following
+      #     {
+      #       ios_specific_fields: a hash of what you want to send to your ios users,
+      #       android_specific_fields: a hash of whaty ou want to send to your android users
+      #                                            separated into {data: {}, options: {}}
+      #     }
+      # }
+      def post_notification_to_users(params = {})
+        self.post("users/notifications", params)
+      end
+
+      # POSTS to users/ to register a user for push notifications
+      # Expects the following
+      # {
+      #   unique_hash: a unique hash of the user in your service,
+      #   apn_device_token: an apple ios device token,
+      #   gcm_registration_id: gcm_registration_id
+      #  }
+      def register_user_for_push(params = {})
+        self.post("users/", params)
+      end
     end
 
   end
