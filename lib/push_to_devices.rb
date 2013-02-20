@@ -41,15 +41,7 @@ module PushToDevices
       def get(endpoint, params={})
 
         # Set up the HTTP connection
-        http = Net::HTTP.new(
-            host,
-            api_port
-        )
-        http.use_ssl = (use_ssl == true)
-        if debug == true
-          http.set_debug_output($stdout)
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
+        http = generate_http
 
         uri = self.generate_uri_from_params(endpoint, params)
 
@@ -73,15 +65,7 @@ module PushToDevices
       def post(endpoint, params = {})
 
         # Set up the HTTP connection
-        http = Net::HTTP.new(
-            host,
-            api_port
-        )
-        http.use_ssl = (use_ssl == true)
-        if debug == true
-          http.set_debug_output($stdout)
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
+        http = generate_http
 
         request = Net::HTTP::Post.new("/"+endpoint, initheader = {'Content-Type' =>'application/json'})
         request.body = params.to_json
@@ -98,6 +82,19 @@ module PushToDevices
         }
 
         self.handle_response(response)
+      end
+
+      def generate_http
+        http = Net::HTTP.new(
+            host,
+            api_port
+        )
+        http.use_ssl = (use_ssl == true)
+        if debug == true
+          http.set_debug_output($stdout)
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        http
       end
 
       def api_port
