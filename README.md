@@ -84,7 +84,15 @@ Examples
     unique_hashes = ["h1k43jgh14g6hl34j1g6", "1bjhl6b134hj6gl41hj6", ...]
     notification_data = {
       ios_specific_fields: {alert: "Hello!", badge: 3},
-      android_specific_fields: {title: "Android notification", text: "Hello Android user!"}
+      android_specific_fields: {
+        data: {
+          title: "Android notification",
+          text: "Hello Android user!"
+        },
+        options: {
+          time_to_live: 3600
+        }
+      }
     }
     PushToDevices::API.post_notification_to_users(unique_hashes: unique_hashes, notification_data: notification_data)
     ```
