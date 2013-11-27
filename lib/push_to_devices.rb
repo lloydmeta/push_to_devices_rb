@@ -171,7 +171,7 @@ module PushToDevices
       #     }
       # }
       def post_notification_to_users(params = {})
-        post("users/notifications", params)
+        post("users/notifications", params.merge(params.delete(:notification_data)))
       end
 
       # POSTS to users/ to register a user for push notifications

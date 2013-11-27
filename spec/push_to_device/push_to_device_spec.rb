@@ -42,7 +42,7 @@ describe PushToDevices do
         android_specific_fields: {text: "android"}
       }
       PushToDevices::API.post_notification_to_users(unique_hashes: unique_hashes, notification_data: notification_data)
-      a_request(:post, "http://nowhere.com/users/notifications").with(body: {unique_hashes: unique_hashes, notification_data: notification_data}.to_json).should have_been_made
+      a_request(:post, "http://nowhere.com/users/notifications").with(body: {unique_hashes: unique_hashes}.merge(notification_data).to_json).should have_been_made
     end
   end
 
