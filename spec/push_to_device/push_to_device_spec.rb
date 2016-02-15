@@ -59,4 +59,31 @@ describe PushToDevices do
     end
   end
 
+  describe ".new" do
+    let(:development) do
+      PushToDevices::API.new do |config|
+        config.host = "local.dev"
+        config.use_ssl = false
+      end
+    end
+
+    let(:production) do
+      api = PushToDevices::API.new
+      api.configure do |config|
+        config.host = "example.com"
+        config.use_ssl = true
+        config.port = 443
+      end
+      api
+    end
+
+    it "uses two api objects in parallel" do
+      development.get_service_info
+      a_request(:get, "http://local.dev/services/me").should have_been_made
+
+      production.get_service_info
+      a_request(:get, "https://example.com/services/me").should have_been_made
+    end
+  end
+
 end

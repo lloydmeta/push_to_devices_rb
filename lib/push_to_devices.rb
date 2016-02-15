@@ -20,6 +20,12 @@ module PushToDevices
 
   module API
 
+    def self.new(&block)
+      instance = dup
+      instance.configure(&block) if block
+      instance
+    end
+
     class << self
       attr_accessor :client_id, :client_secret, :user_agent, :use_ssl, :debug, :host, :port, :client_info
 
