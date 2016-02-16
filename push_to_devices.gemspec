@@ -1,7 +1,7 @@
 Gem::Specification.new do |gem|
     gem.name        = %q{push_to_devices}
-    gem.version = "0.1.5"
-    gem.date = %q{2013-12-03}
+    gem.version = "0.1.6"
+    gem.date = %q{2016-02-16}
     gem.authors     = ["Lloyd Meta"]
     gem.email       = ["lloydmeta@gmail.com"]
     gem.homepage    = "http://github.com/lloydmeta/push_to_devices_rb"
